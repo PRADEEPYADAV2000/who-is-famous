@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Who Is More Famous? 🏆</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+<style>
+:root{
+  --bg:#0d0000;
+  --card:#ffffff08;
+  --card-b:#ffffff10;
+  --text:#f1f5f9;
+  --muted:#64748b;
+  --sub:#94a3b8;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* ── BG MESH ── */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 55% 40% at 0% 0%,   #4a0000 0%, transparent 65%),
+    radial-gradient(ellipse 45% 35% at 100% 100%, #2a0000 0%, transparent 65%),
+    radial-gradient(ellipse 50% 40% at 60% 40%,  #1a1a1a 0%, transparent 70%),
+    radial-gradient(ellipse 30% 30% at 30% 80%,  #3a0000 0%, transparent 60%);
+}
+
+/* ── STOP BANNER ── */
+#stop-banner{display:none;position:relative;z-index:100;background:linear-gradient(90deg,#7f1d1d,#991b1b);
+  color:#fff;text-align:center;padding:10px;font-size:13px;font-weight:600;letter-spacing:.5px}
+
+/* ── HEADER ── */
+header{position:relative;z-index:10;text-align:center;padding:48px 20px 28px}
+.logo{font-size:44px;display:block;margin-bottom:12px;animation:floatY 3s ease-in-out infinite}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+h1{font-size:clamp(26px,5vw,52px);font-weight:900;letter-spacing:-1px;
+  background:linear-gradient(135deg,#fff 0%,#c084fc 45%,#f472b6 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.top-line{
+  display:inline-block;
+  background:linear-gradient(90deg,#ff000022,#ff000011,#ff000022);
+  border:1px solid #ff000040;
+  border-radius:999px;
+  color:#ffaaaa;
+  font-size:14px;
+  font-weight:500;
+  padding:9px 24px;
+  margin-bottom:18px;
+  letter-spacing:.2px;
+  line-height:1.5;
+  max-width:600px;
+}
+.top-line b{color:#ff6666;font-weight:800}
+.tagline{margin-top:8px;color:#9a7a7a;font-size:14px;letter-spacing:.3px}
+.stats-row{display:flex;justify-content:center;gap:24px;margin-top:20px;flex-wrap:wrap}
+.stat-box{background:#ffffff08;border:1px solid #ffffff10;border-radius:12px;
+  padding:10px 20px;text-align:center;min-width:120px}
+.stat-num{font-size:22px;font-weight:800;background:linear-gradient(135deg,#c084fc,#f472b6);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-lbl{font-size:11px;color:var(--muted);margin-top:2px;letter-spacing:.5px;text-transform:uppercase}
+
+/* ── TOOLBAR ── */
+.toolbar{position:relative;z-index:10;max-width:1400px;margin:20px auto 0;
+  padding:0 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.search-wrap{position:relative;flex:1;max-width:320px}
+.search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+.search-input{width:100%;background:#ffffff08;border:1px solid #ffffff12;border-radius:999px;
+  padding:10px 16px 10px 38px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;outline:none;
+  transition:border-color .2s}
+.search-input::placeholder{color:var(--muted)}
+.search-input:focus{border-color:#a78bfa}
+.voted-label{font-size:13px;color:var(--sub);font-style:italic}
+.voted-label b{color:#4ade80;font-style:normal}
+
+.stop-btn{background:transparent;border:1px solid #ef4444;border-radius:8px;
+  color:#ef4444;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;
+  padding:9px 18px;cursor:pointer;transition:all .2s;white-space:nowrap}
+.stop-btn:hover{background:#ef4444;color:#fff}
+.stop-btn:disabled{border-color:#374151;color:#4b5563;cursor:default}
+.stop-btn:disabled:hover{background:transparent}
+
+/* ── TABS ── */
+.tabs{position:relative;z-index:10;display:flex;justify-content:center;
+  gap:6px;padding:24px 20px 0;flex-wrap:wrap}
+.tab-btn{padding:10px 22px;border-radius:999px;border:1px solid #ffffff12;
+  background:#ffffff05;color:var(--sub);font-family:'Inter',sans-serif;font-size:14px;
+  font-weight:600;cursor:pointer;transition:all .25s;white-space:nowrap}
+.tab-btn:hover{border-color:#ffffff25;color:var(--text)}
+.tab-btn.active{color:#fff;border-color:transparent;box-shadow:0 0 20px #00000040}
+
+/* tab active colors */
+.tab-btn.active.t-rich       {background:linear-gradient(135deg,#eab308,#f97316)}
+.tab-btn.active.t-youtube    {background:linear-gradient(135deg,#ef4444,#fb923c)}
+.tab-btn.active.t-influencer {background:linear-gradient(135deg,#a855f7,#ec4899)}
+.tab-btn.active.t-sports     {background:linear-gradient(135deg,#22d3ee,#4ade80)}
+.tab-btn.active.t-winners    {background:linear-gradient(135deg,#fbbf24,#a855f7)}
+
+/* ── SECTION ── */
+.section{display:none;position:relative;z-index:10;max-width:1400px;margin:0 auto;padding:24px 20px 60px}
+.section.active{display:block}
+.sec-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:16px;
+  border-bottom:1px solid #ffffff0d}
+.sec-icon{font-size:24px}
+.sec-title{font-size:18px;font-weight:700}
+.sec-count{font-size:12px;color:var(--muted);margin-left:auto;
+  background:#ffffff08;border:1px solid #ffffff10;border-radius:999px;padding:4px 12px}
+
+/* ── GRID ── */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:14px;padding-top:24px}
+
+/* ── CARD ── */
+.card{
+  background:var(--card);border:1px solid var(--card-b);border-radius:16px;
+  padding:20px 14px 14px;text-align:center;position:relative;overflow:hidden;
+  transition:transform .3s,box-shadow .3s,border-color .3s;
+  animation:cardIn .4s ease both}
+@keyframes cardIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .3s;border-radius:16px;pointer-events:none}
+.card:hover{transform:translateY(-5px)}
+.card:hover::before{opacity:1}
+
+/* card themes */
+.card.theme-rich::before        {background:linear-gradient(135deg,#eab30810,#f9731608)}
+.card.theme-rich:hover          {border-color:#eab30840;box-shadow:0 16px 40px #eab30812}
+.card.theme-youtube::before     {background:linear-gradient(135deg,#ef444410,#fb923c08)}
+.card.theme-youtube:hover       {border-color:#ef444440;box-shadow:0 16px 40px #ef444412}
+.card.theme-influencer::before  {background:linear-gradient(135deg,#a855f710,#ec489908)}
+.card.theme-influencer:hover    {border-color:#a855f740;box-shadow:0 16px 40px #a855f712}
+.card.theme-sports::before      {background:linear-gradient(135deg,#22d3ee10,#4ade8008)}
+.card.theme-sports:hover        {border-color:#22d3ee40;box-shadow:0 16px 40px #22d3ee12}
+
+/* voted card */
+.card.my-card{border-color:#4ade8040!important;background:#ffffff06}
+
+/* ── RANK ── */
+.rank-badge{
+  position:absolute;top:10px;left:10px;width:26px;height:26px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800}
+.rank-1{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#000}
+.rank-2{background:linear-gradient(135deg,#e2e8f0,#94a3b8);color:#000}
+.rank-3{background:linear-gradient(135deg,#cd7c3a,#92400e);color:#fff}
+.rank-n{background:#ffffff0d;color:var(--muted);font-size:9px}
+
+/* ── TOP 3 CARD GLOW ── */
+.card.gold-card{
+  border-color:#fbbf2460!important;
+  box-shadow:0 0 0 1px #fbbf2430, 0 8px 32px #fbbf2420;
+}
+.card.gold-card .rank-badge{
+  width:34px;height:34px;font-size:16px;
+  box-shadow:0 0 12px #fbbf2480;
+}
+.card.silver-card{
+  border-color:#94a3b860!important;
+  box-shadow:0 0 0 1px #94a3b830, 0 8px 32px #94a3b820;
+}
+.card.silver-card .rank-badge{
+  width:30px;height:30px;font-size:14px;
+  box-shadow:0 0 10px #94a3b870;
+}
+.card.bronze-card{
+  border-color:#cd7c3a60!important;
+  box-shadow:0 0 0 1px #cd7c3a30, 0 8px 32px #cd7c3a20;
+}
+.card.bronze-card .rank-badge{
+  width:28px;height:28px;font-size:13px;
+  box-shadow:0 0 8px #cd7c3a70;
+}
+
+/* crown above top 1 */
+.card.gold-card::after{
+  content:'👑';
+  position:absolute;top:-18px;left:50%;transform:translateX(-50%);
+  font-size:22px;filter:drop-shadow(0 2px 6px #fbbf2490);
+  animation:crownBounce 2s ease-in-out infinite;
+}
+@keyframes crownBounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-4px)}}
+
+/* ── SPORT BADGE ── */
+.sport-badge{
+  display:inline-block;font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  padding:2px 8px;border-radius:999px;margin-bottom:8px;border:1px solid transparent}
+
+/* ── AVATAR ── */
+.avatar-wrap{position:relative;width:80px;height:80px;margin:0 auto 12px}
+.avatar-ring{position:absolute;inset:-3px;border-radius:50%;animation:spin 5s linear infinite}
+.card.my-card .avatar-ring{background:linear-gradient(135deg,#4ade80,#22d3ee)!important}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.avatar-inner{position:absolute;inset:2px;border-radius:50%;overflow:hidden;background:#1e293b}
+.avatar-inner img{width:100%;height:100%;object-fit:cover;display:block}
+.avatar-fallback{width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  font-size:26px;font-weight:800;color:#fff}
+
+/* ring colors by theme */
+.card.theme-rich        .avatar-ring{background:linear-gradient(135deg,#eab308,#f97316)}
+.card.theme-youtube     .avatar-ring{background:linear-gradient(135deg,#ef4444,#fb923c)}
+.card.theme-influencer  .avatar-ring{background:linear-gradient(135deg,#a855f7,#ec4899)}
+.card.theme-sports      .avatar-ring{background:linear-gradient(135deg,#22d3ee,#4ade80)}
+
+/* ── TEXT ── */
+.person-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;line-height:1.2}
+.person-title{font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.4}
+
+/* ── VOTE COUNT ── */
+.vote-num{font-size:26px;font-weight:900;line-height:1}
+.card.theme-rich        .vote-num{background:linear-gradient(135deg,#eab308,#f97316);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.card.theme-youtube     .vote-num{background:linear-gradient(135deg,#ef4444,#fb923c);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.card.theme-influencer  .vote-num{background:linear-gradient(135deg,#a855f7,#ec4899);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.card.theme-sports      .vote-num{background:linear-gradient(135deg,#22d3ee,#4ade80);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.vote-label{font-size:10px;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-bottom:12px}
+
+/* ── VOTE BUTTON ── */
+.vote-btn{
+  width:100%;padding:9px 0;border-radius:10px;border:none;
+  font-family:'Inter',sans-serif;font-size:12px;font-weight:700;
+  cursor:pointer;transition:all .25s;position:relative;overflow:hidden;letter-spacing:.3px}
+.vote-btn::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,.15);
+  opacity:0;transition:opacity .2s}
+.vote-btn:hover:not(:disabled)::after{opacity:1}
+.vote-btn:active:not(:disabled){transform:scale(.97)}
+
+.card.theme-rich       .vote-btn.unvoted{background:linear-gradient(135deg,#eab308,#f97316);color:#000;box-shadow:0 4px 16px #eab30830}
+.card.theme-youtube    .vote-btn.unvoted{background:linear-gradient(135deg,#ef4444,#fb923c);color:#fff;box-shadow:0 4px 16px #ef444430}
+.card.theme-influencer .vote-btn.unvoted{background:linear-gradient(135deg,#a855f7,#ec4899);color:#fff;box-shadow:0 4px 16px #a855f730}
+.card.theme-sports     .vote-btn.unvoted{background:linear-gradient(135deg,#22d3ee,#4ade80);color:#000;box-shadow:0 4px 16px #22d3ee30}
+
+.vote-btn.btn-myvote{background:linear-gradient(135deg,#16a34a,#4ade80);color:#fff;cursor:default}
+.vote-btn.btn-locked{background:#ffffff08;color:var(--muted);cursor:default;border:1px solid #ffffff0a}
+.vote-btn.btn-stopped{background:#ffffff05;color:#6b7280;cursor:default;border:1px solid #ffffff0a;font-style:italic}
+
+/* ── MY VOTE CHECK ── */
+.my-check{display:none;position:absolute;top:10px;right:10px;width:20px;height:20px;
+  border-radius:50%;background:#4ade80;color:#000;font-size:11px;font-weight:800;
+  align-items:center;justify-content:center}
+.card.my-card .my-check{display:flex}
+
+/* ── NO RESULTS ── */
+.no-results{text-align:center;padding:60px 20px;color:var(--muted);font-size:15px;
+  background:#ffffff04;border:1px solid #ffffff08;border-radius:16px}
+
+/* ── LEADERBOARD ── */
+.lb-list{display:flex;flex-direction:column;gap:6px;max-width:860px;margin:0 auto;width:100%}
+.lb-row{
+  display:flex;align-items:center;gap:14px;
+  background:#ffffff05;border:1px solid #ffffff08;border-radius:14px;
+  padding:10px 16px;transition:background .2s,border-color .2s;
+}
+.lb-row:hover{background:#ffffff09;border-color:#ffffff14}
+
+/* top 3 row highlights */
+.lb-row.lb-gold{
+  background:linear-gradient(90deg,#fbbf2412,#f9731408);
+  border-color:#fbbf2440;
+  box-shadow:0 2px 16px #fbbf2412;
+}
+.lb-row.lb-silver{
+  background:linear-gradient(90deg,#94a3b812,#e2e8f008);
+  border-color:#94a3b840;
+}
+.lb-row.lb-bronze{
+  background:linear-gradient(90deg,#cd7c3a12,#92400e08);
+  border-color:#cd7c3a40;
+}
+
+/* rank number */
+.lb-rank{
+  min-width:44px;text-align:center;font-size:13px;font-weight:800;color:var(--muted);
+  font-variant-numeric:tabular-nums;
+}
+.lb-rank.gold  {font-size:22px;color:#fbbf24}
+.lb-rank.silver{font-size:20px;color:#94a3b8}
+.lb-rank.bronze{font-size:18px;color:#cd7c3a}
+
+/* avatar */
+.lb-avatar{width:42px;height:42px;border-radius:50%;overflow:hidden;flex-shrink:0;
+  border:2px solid #ffffff14}
+.lb-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.lb-avatar-fb{width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:800;color:#fff}
+
+/* name + meta */
+.lb-info{flex:1;min-width:0}
+.lb-name{font-size:14px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb-meta{font-size:11px;color:var(--muted);margin-top:1px}
+
+/* category badge */
+.lb-cat{font-size:10px;font-weight:700;padding:3px 10px;border-radius:999px;
+  white-space:nowrap;flex-shrink:0;letter-spacing:.3px}
+.lb-cat.cat-rich       {background:#eab30820;color:#eab308;border:1px solid #eab30840}
+.lb-cat.cat-youtube    {background:#ef444420;color:#ef4444;border:1px solid #ef444440}
+.lb-cat.cat-influencer {background:#a855f720;color:#a855f7;border:1px solid #a855f740}
+.lb-cat.cat-sports     {background:#22d3ee20;color:#22d3ee;border:1px solid #22d3ee40}
+
+/* votes */
+.lb-votes{min-width:70px;text-align:right;flex-shrink:0}
+.lb-num{font-size:18px;font-weight:800;line-height:1}
+.lb-num.gold  {background:linear-gradient(135deg,#fbbf24,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.lb-num.silver{background:linear-gradient(135deg,#e2e8f0,#94a3b8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.lb-num.bronze{background:linear-gradient(135deg,#cd7c3a,#92400e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.lb-num.normal{color:var(--sub)}
+.lb-vlbl{font-size:10px;color:var(--muted);letter-spacing:.5px;text-transform:uppercase}
+
+/* voted indicator */
+.lb-you{font-size:10px;font-weight:700;color:#4ade80;background:#4ade8015;
+  border:1px solid #4ade8030;border-radius:999px;padding:2px 8px;white-space:nowrap;flex-shrink:0}
+
+/* zero-vote rows */
+.lb-row.zero-row{opacity:.45}
+.lb-row.zero-row:hover{opacity:.75}
+
+/* ── SPORTS specific ── */
+.sports-grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+.sport-pill{
+  font-size:10px;font-weight:700;padding:3px 10px;border-radius:999px;
+  display:inline-block;margin-bottom:8px;letter-spacing:.5px;text-transform:uppercase}
+
+/* ── FOOTER ── */
+footer{position:relative;z-index:10;text-align:center;padding:24px;
+  color:var(--muted);font-size:12px;border-top:1px solid #ffffff08}
+
+/* ── PULSE ON VOTE ── */
+@keyframes pulseGreen{
+  0%{box-shadow:0 0 0 0 #4ade8040}
+  70%{box-shadow:0 0 0 18px transparent}
+  100%{box-shadow:0 0 0 0 transparent}
+}
+.card.just-voted{animation:pulseGreen .7s ease-out}
+
+/* ══════════════════════════════════════
+   RESPONSIVE — ALL DEVICES
+   ══════════════════════════════════════ */
+
+/* ── Tablet landscape (≤ 1024px) ── */
+@media(max-width:1024px){
+  .grid{grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+  h1{font-size:clamp(24px,4vw,40px)}
+  .sec-title{font-size:16px}
+}
+
+/* ── Tablet portrait (≤ 768px) ── */
+@media(max-width:768px){
+  header{padding:32px 16px 20px}
+  .top-line{font-size:13px;padding:8px 18px}
+  h1{font-size:28px}
+  .tagline{font-size:13px}
+
+  .stats-row{gap:10px}
+  .stat-box{padding:8px 14px;min-width:90px}
+  .stat-num{font-size:18px}
+  .stat-lbl{font-size:10px}
+
+  .toolbar{padding:0 14px;gap:8px}
+  .search-wrap{max-width:100%;flex:1 1 160px}
+  .voted-label{font-size:12px}
+  .stop-btn{font-size:12px;padding:8px 14px}
+
+  /* tabs scroll horizontally on tablet */
+  .tabs{
+    flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;
+    padding:16px 14px 0;gap:6px;
+    -webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab-btn{flex-shrink:0;padding:9px 16px;font-size:13px}
+
+  .section{padding:18px 14px 48px}
+  .sec-header{gap:8px}
+  .sec-title{font-size:15px}
+  .sec-count{display:none}
+
+  .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;padding-top:20px}
+  .card{padding:18px 10px 12px}
+  .avatar-wrap{width:70px;height:70px}
+  .person-name{font-size:12px}
+  .person-title{font-size:10px}
+  .vote-num{font-size:22px}
+  .vote-btn{font-size:12px;padding:8px 0}
+
+  /* leaderboard on tablet */
+  .lb-row{padding:9px 12px;gap:10px}
+  .lb-rank{min-width:36px;font-size:12px}
+  .lb-rank.gold{font-size:18px}
+  .lb-rank.silver{font-size:16px}
+  .lb-rank.bronze{font-size:15px}
+  .lb-avatar{width:36px;height:36px}
+  .lb-name{font-size:13px}
+  .lb-meta{font-size:10px}
+  .lb-num{font-size:16px}
+  .lb-vlbl{font-size:9px}
+}
+
+/* ── Mobile large (≤ 600px) ── */
+@media(max-width:600px){
+  .grid{grid-template-columns:1fr 1fr;gap:9px}
+  .card{padding:16px 9px 12px}
+  .avatar-wrap{width:62px;height:62px}
+  .person-name{font-size:11px}
+  .person-title{font-size:10px;margin-bottom:8px}
+  .vote-num{font-size:20px}
+  .vote-label{font-size:9px;margin-bottom:10px}
+  .vote-btn{font-size:11px;padding:8px 0;border-radius:8px}
+  .rank-badge{width:22px;height:22px;font-size:9px}
+  .card.gold-card .rank-badge{width:28px;height:28px;font-size:14px}
+  .card.silver-card .rank-badge{width:25px;height:25px;font-size:12px}
+  .card.bronze-card .rank-badge{width:23px;height:23px;font-size:11px}
+  .my-check{width:16px;height:16px;font-size:9px}
+
+  /* toolbar stacks on small screens */
+  .toolbar{flex-direction:column;align-items:stretch;padding:10px 14px;gap:8px}
+  .search-wrap{max-width:100%}
+  .voted-label{text-align:center;font-size:11px}
+  .stop-btn{width:100%;text-align:center}
+
+  /* leaderboard compact */
+  .lb-row{padding:8px 10px;gap:8px;border-radius:10px}
+  .lb-rank{min-width:30px}
+  .lb-avatar{width:32px;height:32px}
+  .lb-name{font-size:12px}
+  .lb-meta{display:none}
+  .lb-cat{font-size:9px;padding:2px 7px}
+  .lb-num{font-size:14px}
+  .lb-vlbl{font-size:8px}
+  .lb-you{font-size:9px;padding:2px 6px}
+
+  /* sport badge smaller */
+  .sport-pill{font-size:8px;padding:2px 7px;margin-bottom:6px}
+
+  footer{font-size:11px;padding:16px 14px;line-height:1.6}
+}
+
+/* ── Mobile small (≤ 380px) ── */
+@media(max-width:380px){
+  header{padding:24px 12px 16px}
+  .top-line{font-size:12px;padding:7px 14px}
+  h1{font-size:22px}
+  .stats-row{gap:6px}
+  .stat-box{padding:6px 10px;min-width:80px}
+  .stat-num{font-size:16px}
+
+  .grid{grid-template-columns:1fr 1fr;gap:7px}
+  .card{padding:14px 7px 10px}
+  .avatar-wrap{width:54px;height:54px}
+  .person-name{font-size:10px}
+  .vote-num{font-size:18px}
+  .vote-btn{font-size:10px;padding:7px 0}
+
+  .tab-btn{padding:8px 12px;font-size:11px}
+
+  .lb-row{gap:6px;padding:7px 8px}
+  .lb-avatar{width:28px;height:28px}
+  .lb-rank{min-width:26px;font-size:10px}
+  .lb-cat{display:none}
+  .lb-name{font-size:11px}
+  .lb-num{font-size:13px}
+}
+
+/* ── Touch device: disable hover lift (saves jank on tap) ── */
+@media(hover:none){
+  .card:hover{transform:none}
+  .vote-btn:hover:not(:disabled)::after{opacity:0}
+}
+</style>
+</head>
+<body>
+
+<div id="stop-banner">⛔ &nbsp; VOTING HAS BEEN STOPPED BY ADMINISTRATOR &nbsp; ⛔</div>
+
+<header>
+  <span class="logo">🏆</span>
+  <div class="top-line">You only get <b>one vote</b> — don't waste it. Give it to the one you believe belongs on top of the world.</div>
+  <h1>Who Is More Famous?</h1>
+  <div class="tagline">350 icons · 4 categories · one vote · the world decides</div>
+  <div class="stats-row">
+    <div class="stat-box">
+      <div class="stat-num" id="totalVoters">0</div>
+      <div class="stat-lbl">Total Votes</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num">350</div>
+      <div class="stat-lbl">Total Icons</div>
+    </div>
+    <div class="stat-box" id="voted-box" style="display:none">
+      <div class="stat-num" style="font-size:14px;padding-top:4px" id="votedName">—</div>
+      <div class="stat-lbl">Your Vote</div>
+    </div>
+  </div>
+</header>
+
+<div class="toolbar">
+  <div style="display:flex;align-items:center;gap:10px;flex:1;flex-wrap:wrap">
+    <div class="search-wrap">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input class="search-input" id="searchBox" type="text" placeholder="Search anyone..." oninput="handleSearch()"/>
+    </div>
+    <div class="voted-label" id="votedLabel"></div>
+  </div>
+  <button class="stop-btn" id="stopBtn" onclick="handleStop()">Stop Voting</button>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn active t-rich"       onclick="switchTab('rich',this)">💰 Richest 100</button>
+  <button class="tab-btn t-youtube"           onclick="switchTab('youtube',this)">▶ YouTubers 100</button>
+  <button class="tab-btn t-influencer"        onclick="switchTab('influencer',this)">★ Influencers 100</button>
+  <button class="tab-btn t-sports"            onclick="switchTab('sports',this)">🏅 Sports 50</button>
+  <button class="tab-btn t-winners"           onclick="switchTab('winners',this)">🏆 Leaderboard</button>
+</div>
+
+<section class="section active" id="rich">
+  <div class="sec-header">
+    <span class="sec-icon">💰</span>
+    <span class="sec-title">World's 100 Richest People</span>
+    <span class="sec-count">100 icons</span>
+  </div>
+  <div class="grid" id="rich-grid"></div>
+</section>
+
+<section class="section" id="youtube">
+  <div class="sec-header">
+    <span class="sec-icon">▶</span>
+    <span class="sec-title">World's Top 100 YouTubers</span>
+    <span class="sec-count">100 icons</span>
+  </div>
+  <div class="grid" id="youtube-grid"></div>
+</section>
+
+<section class="section" id="influencer">
+  <div class="sec-header">
+    <span class="sec-icon">★</span>
+    <span class="sec-title">World's Top 100 Influencers</span>
+    <span class="sec-count">100 icons</span>
+  </div>
+  <div class="grid" id="influencer-grid"></div>
+</section>
+
+<section class="section" id="sports">
+  <div class="sec-header">
+    <span class="sec-icon">🏅</span>
+    <span class="sec-title">World's Top 50 Sports Legends</span>
+    <span class="sec-count">50 icons</span>
+  </div>
+  <div class="grid sports-grid" id="sports-grid"></div>
+</section>
+
+<section class="section" id="winners">
+  <div class="sec-header">
+    <span class="sec-icon">🏆</span>
+    <span class="sec-title">Full Leaderboard — All 350 Ranked by Votes</span>
+    <span class="sec-count" id="lb-sub">Sorted highest → lowest</span>
+  </div>
+  <div class="lb-list" id="winners-list"></div>
+</section>
+
+<footer>
+  350 icons. One world. One vote. &nbsp;·&nbsp; Fame is not given — it is decided by the people. &nbsp;·&nbsp; Who do <em>you</em> think the whole world knows?
+</footer>
+
+<script>
+// ── AVATAR ─────────────────────────────────────────────────────
+const av=(n,c)=>`https://ui-avatars.com/api/?name=${encodeURIComponent(n)}&background=${c}&color=fff&size=160&bold=true`;
+const C=['2c3e7a','7a2c3e','1a5c3a','7a5c1a','3e1a7a','1a7a7a','7a1a1a','1a7a3e','5c1a7a','1a5c7a','7a3e1a','1a7a5c','4a1a7a','7a4a1a','1a4a7a','6b21a8','0e7490','15803d','b45309','be123c'];
+let ci=0;const col=()=>C[ci++%C.length];
+
+// sport pill colors
+const sportColors={
+  'Football':    {bg:'#14532d22',color:'#4ade80',border:'#4ade8040'},
+  'Basketball':  {bg:'#431d0322',color:'#fb923c',border:'#fb923c40'},
+  'Tennis':      {bg:'#1c3a0022',color:'#bef264',border:'#bef26440'},
+  'Cricket':     {bg:'#0c3d5522',color:'#38bdf8',border:'#38bdf840'},
+  'Golf':        {bg:'#14533c22',color:'#6ee7b7',border:'#6ee7b740'},
+  'Athletics':   {bg:'#1e1b4b22',color:'#818cf8',border:'#818cf840'},
+  'Swimming':    {bg:'#0c3a5522',color:'#67e8f9',border:'#67e8f940'},
+  'Boxing':      {bg:'#7f1d1d22',color:'#fca5a5',border:'#fca5a540'},
+  'MMA':         {bg:'#7c1d1d22',color:'#f87171',border:'#f8717140'},
+  'Formula 1':   {bg:'#1c1c2a22',color:'#c4b5fd',border:'#c4b5fd40'},
+  'Gymnastics':  {bg:'#4a1d6022',color:'#f0abfc',border:'#f0abfc40'},
+  'Wrestling':   {bg:'#5c1a0022',color:'#fda4af',border:'#fda4af40'},
+  'Badminton':   {bg:'#0c3d5522',color:'#7dd3fc',border:'#7dd3fc40'},
+  'Marathon':    {bg:'#1a3a1a22',color:'#86efac',border:'#86efac40'},
+  'Javelin':     {bg:'#3b3b0022',color:'#fde68a',border:'#fde68a40'},
+};
+
+// ── DATA ───────────────────────────────────────────────────────
+const DATA={
+  rich:[
+    {id:'r1',  name:'Elon Musk',             title:'Tesla · SpaceX · X',           img:av('Elon Musk',col())},
+    {id:'r2',  name:'Jeff Bezos',            title:'Founder — Amazon',             img:av('Jeff Bezos',col())},
+    {id:'r3',  name:'Bernard Arnault',       title:'Chairman — LVMH',              img:av('Bernard Arnault',col())},
+    {id:'r4',  name:'Mark Zuckerberg',       title:'CEO — Meta',                   img:av('Mark Zuckerberg',col())},
+    {id:'r5',  name:'Bill Gates',            title:'Co-Founder — Microsoft',       img:av('Bill Gates',col())},
+    {id:'r6',  name:'Larry Ellison',         title:'Founder — Oracle',             img:av('Larry Ellison',col())},
+    {id:'r7',  name:'Warren Buffett',        title:'CEO — Berkshire Hathaway',     img:av('Warren Buffett',col())},
+    {id:'r8',  name:'Larry Page',            title:'Co-Founder — Google',          img:av('Larry Page',col())},
+    {id:'r9',  name:'Sergey Brin',           title:'Co-Founder — Google',          img:av('Sergey Brin',col())},
+    {id:'r10', name:'Steve Ballmer',         title:'Ex-CEO — Microsoft',           img:av('Steve Ballmer',col())},
+    {id:'r11', name:'Mukesh Ambani',         title:'Chairman — Reliance',          img:av('Mukesh Ambani',col())},
+    {id:'r12', name:'Michael Bloomberg',     title:'Founder — Bloomberg LP',       img:av('Michael Bloomberg',col())},
+    {id:'r13', name:'Carlos Slim Helu',      title:'Telecom Tycoon — Mexico',      img:av('Carlos Slim',col())},
+    {id:'r14', name:'F. Bettencourt Meyers', title:"Heir — L'Oreal",              img:av('Francoise B',col())},
+    {id:'r15', name:'Jim Walton',            title:'Walmart Heir',                 img:av('Jim Walton',col())},
+    {id:'r16', name:'Rob Walton',            title:'Walmart Heir',                 img:av('Rob Walton',col())},
+    {id:'r17', name:'Alice Walton',          title:'Walmart Heir',                 img:av('Alice Walton',col())},
+    {id:'r18', name:'Michael Dell',          title:'Founder — Dell Technologies',  img:av('Michael Dell',col())},
+    {id:'r19', name:'Jensen Huang',          title:'CEO — NVIDIA',                 img:av('Jensen Huang',col())},
+    {id:'r20', name:'Phil Knight',           title:'Co-Founder — Nike',            img:av('Phil Knight',col())},
+    {id:'r21', name:'Jack Ma',               title:'Founder — Alibaba',            img:av('Jack Ma',col())},
+    {id:'r22', name:'Zhong Shanshan',        title:'Founder — Nongfu Spring',      img:av('Zhong Shanshan',col())},
+    {id:'r23', name:'He Xiangjian',          title:'Founder — Midea Group',        img:av('He Xiangjian',col())},
+    {id:'r24', name:'Li Ka-shing',           title:'Founder — CK Hutchison',       img:av('Li Ka-shing',col())},
+    {id:'r25', name:'Gautam Adani',          title:'Chairman — Adani Group',       img:av('Gautam Adani',col())},
+    {id:'r26', name:'Shiv Nadar',            title:'Founder — HCL Technologies',   img:av('Shiv Nadar',col())},
+    {id:'r27', name:'Lakshmi Mittal',        title:'CEO — ArcelorMittal',          img:av('Lakshmi Mittal',col())},
+    {id:'r28', name:'Jorge Paulo Lemann',    title:'AB InBev — Brazil',            img:av('Jorge Lemann',col())},
+    {id:'r29', name:'Joseph Safra',          title:'Safra Banking Group',          img:av('Joseph Safra',col())},
+    {id:'r30', name:'Dieter Schwarz',        title:'Owner — Lidl & Kaufland',      img:av('Dieter Schwarz',col())},
+    {id:'r31', name:'Klaus-Michael Kühne',   title:'CEO — Kühne+Nagel',            img:av('Klaus Kuhne',col())},
+    {id:'r32', name:'Stefan Quandt',         title:'Shareholder — BMW',            img:av('Stefan Quandt',col())},
+    {id:'r33', name:'Giovanni Ferrero',      title:'CEO — Ferrero Group',          img:av('Giovanni Ferrero',col())},
+    {id:'r34', name:'Miriam Adelson',        title:'Las Vegas Sands',              img:av('Miriam Adelson',col())},
+    {id:'r35', name:'David Thomson',         title:'Thomson Reuters',              img:av('David Thomson',col())},
+    {id:'r36', name:'Gina Rinehart',         title:'Mining — Australia',           img:av('Gina Rinehart',col())},
+    {id:'r37', name:'Andrew Forrest',        title:'Fortescue Metals',             img:av('Andrew Forrest',col())},
+    {id:'r38', name:'Rupert Murdoch',        title:'Founder — News Corp',          img:av('Rupert Murdoch',col())},
+    {id:'r39', name:'Len Blavatnik',         title:'Access Industries',            img:av('Len Blavatnik',col())},
+    {id:'r40', name:'Vladimir Potanin',      title:'Norilsk Nickel',               img:av('Vladimir Potanin',col())},
+    {id:'r41', name:'Peter Thiel',           title:'Co-Founder — Palantir',        img:av('Peter Thiel',col())},
+    {id:'r42', name:'Patrick Collison',      title:'Co-Founder — Stripe',          img:av('Patrick Collison',col())},
+    {id:'r43', name:'John Collison',         title:'Co-Founder — Stripe',          img:av('John Collison',col())},
+    {id:'r44', name:'Daniel Ek',             title:'Founder — Spotify',            img:av('Daniel Ek',col())},
+    {id:'r45', name:'Marc Benioff',          title:'CEO — Salesforce',             img:av('Marc Benioff',col())},
+    {id:'r46', name:'Reed Hastings',         title:'Co-Founder — Netflix',         img:av('Reed Hastings',col())},
+    {id:'r47', name:'Jack Dorsey',           title:'Co-Founder — Twitter/Block',   img:av('Jack Dorsey',col())},
+    {id:'r48', name:'Evan Spiegel',          title:'Co-Founder — Snapchat',        img:av('Evan Spiegel',col())},
+    {id:'r49', name:'Dustin Moskovitz',      title:'Co-Founder — Facebook/Asana', img:av('Dustin Moskovitz',col())},
+    {id:'r50', name:'Eduardo Saverin',       title:'Co-Founder — Facebook',        img:av('Eduardo Saverin',col())},
+    {id:'r51', name:'Ray Dalio',             title:'Founder — Bridgewater',        img:av('Ray Dalio',col())},
+    {id:'r52', name:'Ken Griffin',           title:'Founder — Citadel',            img:av('Ken Griffin',col())},
+    {id:'r53', name:'James Simons',          title:'Renaissance Technologies',     img:av('James Simons',col())},
+    {id:'r54', name:'Stephen Schwarzman',    title:'Founder — Blackstone',         img:av('Stephen Schwarzman',col())},
+    {id:'r55', name:'Harold Hamm',           title:'Continental Resources',        img:av('Harold Hamm',col())},
+    {id:'r56', name:'John Mars',             title:'Mars Inc.',                    img:av('John Mars',col())},
+    {id:'r57', name:'Jacqueline Mars',       title:'Mars Inc.',                    img:av('Jacqueline Mars',col())},
+    {id:'r58', name:'Michael Jordan',        title:'NBA Legend & Businessman',     img:av('Michael Jordan',col())},
+    {id:'r59', name:'Jay-Z',                 title:'Rapper & Businessman',         img:av('Jay Z',col())},
+    {id:'r60', name:'Oprah Winfrey',         title:'Media Mogul',                  img:av('Oprah Winfrey',col())},
+    {id:'r61', name:'George Soros',          title:'Investor — Soros Fund',        img:av('George Soros',col())},
+    {id:'r62', name:'Carl Icahn',            title:'Activist Investor',            img:av('Carl Icahn',col())},
+    {id:'r63', name:'Sam Altman',            title:'CEO — OpenAI',                 img:av('Sam Altman',col())},
+    {id:'r64', name:'Marc Andreessen',       title:'Co-Founder — a16z',            img:av('Marc Andreessen',col())},
+    {id:'r65', name:'Andy Jassy',            title:'CEO — Amazon',                 img:av('Andy Jassy',col())},
+    {id:'r66', name:'Masayoshi Son',         title:'Founder — SoftBank',           img:av('Masayoshi Son',col())},
+    {id:'r67', name:'Tadashi Yanai',         title:'Founder — Uniqlo',             img:av('Tadashi Yanai',col())},
+    {id:'r68', name:'Pony Ma',               title:'CEO — Tencent',                img:av('Pony Ma',col())},
+    {id:'r69', name:'Robin Li',              title:'Co-Founder — Baidu',           img:av('Robin Li',col())},
+    {id:'r70', name:'Lei Jun',               title:'Founder — Xiaomi',             img:av('Lei Jun',col())},
+    {id:'r71', name:'Zhang Yiming',          title:'Founder — ByteDance/TikTok',   img:av('Zhang Yiming',col())},
+    {id:'r72', name:'Colin Huang',           title:'Founder — Temu/PDD',           img:av('Colin Huang',col())},
+    {id:'r73', name:'Richard Liu',           title:'Founder — JD.com',             img:av('Richard Liu',col())},
+    {id:'r74', name:'Wang Jianlin',          title:'Dalian Wanda Group',           img:av('Wang Jianlin',col())},
+    {id:'r75', name:'Lee Jae-yong',          title:'Chairman — Samsung',           img:av('Lee Jae-yong',col())},
+    {id:'r76', name:'Azim Premji',           title:'Founder — Wipro',              img:av('Azim Premji',col())},
+    {id:'r77', name:'Ratan Tata',            title:'Tata Group — India',           img:av('Ratan Tata',col())},
+    {id:'r78', name:'Kumar M. Birla',        title:'Aditya Birla Group',           img:av('Kumar Birla',col())},
+    {id:'r79', name:'Sunil Mittal',          title:'Founder — Bharti Airtel',      img:av('Sunil Mittal',col())},
+    {id:'r80', name:'Cyrus Poonawalla',      title:'Serum Institute of India',     img:av('Cyrus Poonawalla',col())},
+    {id:'r81', name:'Savitri Jindal',        title:'JSW Group — India',            img:av('Savitri Jindal',col())},
+    {id:'r82', name:'Aliko Dangote',         title:'Dangote Group — Africa',       img:av('Aliko Dangote',col())},
+    {id:'r83', name:'Johann Rupert',         title:'Richemont — Luxury',           img:av('Johann Rupert',col())},
+    {id:'r84', name:'Nicky Oppenheimer',     title:'De Beers — Diamonds',          img:av('Nicky Oppenheimer',col())},
+    {id:'r85', name:'Patrice Motsepe',       title:'African Rainbow Minerals',     img:av('Patrice Motsepe',col())},
+    {id:'r86', name:'Richard Branson',       title:'Founder — Virgin Group',       img:av('Richard Branson',col())},
+    {id:'r87', name:'Roman Abramovich',      title:'Evraz · Chelsea FC',           img:av('Roman Abramovich',col())},
+    {id:'r88', name:'Alisher Usmanov',       title:'USM Holdings — Russia',        img:av('Alisher Usmanov',col())},
+    {id:'r89', name:'Mikhail Fridman',       title:'Alfa Group — Russia',          img:av('Mikhail Fridman',col())},
+    {id:'r90', name:'Prince Al-Waleed',      title:'Kingdom Holdings — Saudi',     img:av('Al Waleed',col())},
+    {id:'r91', name:'Sheikh Mohammed',       title:'Ruler — Dubai',                img:av('Sheikh Mohammed',col())},
+    {id:'r92', name:'Eike Batista',          title:'EBX Group — Brazil',           img:av('Eike Batista',col())},
+    {id:'r93', name:'André Esteves',         title:'BTG Pactual — Brazil',         img:av('Andre Esteves',col())},
+    {id:'r94', name:'Nandan Nilekani',       title:'Co-Founder — Infosys',         img:av('Nandan Nilekani',col())},
+    {id:'r95', name:'Narayana Murthy',       title:'Co-Founder — Infosys',         img:av('Narayana Murthy',col())},
+    {id:'r96', name:'Victor Pinchuk',        title:'EastOne Group — Ukraine',      img:av('Victor Pinchuk',col())},
+    {id:'r97', name:'Rinat Akhmetov',        title:'DTEK Energy — Ukraine',        img:av('Rinat Akhmetov',col())},
+    {id:'r98', name:'Tadahiro Yoshida',      title:'Founder — YKK Group',          img:av('Tadahiro Yoshida',col())},
+    {id:'r99', name:'Vincent Bolloré',       title:'Bolloré Group — France',       img:av('Vincent Bollore',col())},
+    {id:'r100',name:'François Pinault',      title:'Kering — Gucci, YSL',          img:av('Francois Pinault',col())},
+  ],
+  youtube:[
+    {id:'y1',  name:'MrBeast',              title:'330M+ Subscribers',   img:av('MrBeast',col())},
+    {id:'y2',  name:'T-Series',             title:'275M+ Subscribers',   img:av('T Series',col())},
+    {id:'y3',  name:'Cocomelon',            title:'175M+ Subscribers',   img:av('Cocomelon',col())},
+    {id:'y4',  name:'SET India',            title:'170M+ Subscribers',   img:av('SET India',col())},
+    {id:'y5',  name:'Kids Diana Show',      title:'120M+ Subscribers',   img:av('Kids Diana',col())},
+    {id:'y6',  name:'Pinkfong',             title:'80M+ Subscribers',    img:av('Pinkfong',col())},
+    {id:'y7',  name:'PewDiePie',            title:'111M+ Subscribers',   img:av('PewDiePie',col())},
+    {id:'y8',  name:'Like Nastya',          title:'110M+ Subscribers',   img:av('Like Nastya',col())},
+    {id:'y9',  name:'Vlad and Niki',        title:'100M+ Subscribers',   img:av('Vlad Niki',col())},
+    {id:'y10', name:"Ryan's World",         title:'38M+ Subscribers',    img:av('Ryans World',col())},
+    {id:'y11', name:'Dude Perfect',         title:'60M+ Subscribers',    img:av('Dude Perfect',col())},
+    {id:'y12', name:'Markiplier',           title:'35M+ Subscribers',    img:av('Markiplier',col())},
+    {id:'y13', name:'Mark Rober',           title:'50M+ Subscribers',    img:av('Mark Rober',col())},
+    {id:'y14', name:'SSSniperwolf',         title:'35M+ Subscribers',    img:av('SSSniperwolf',col())},
+    {id:'y15', name:'Dream',               title:'32M+ Subscribers',    img:av('Dream MC',col())},
+    {id:'y16', name:'Jacksepticeye',        title:'32M+ Subscribers',    img:av('Jacksepticeye',col())},
+    {id:'y17', name:'DanTDM',              title:'28M+ Subscribers',    img:av('DanTDM',col())},
+    {id:'y18', name:'Kurzgesagt',           title:'22M+ Subscribers',    img:av('Kurzgesagt',col())},
+    {id:'y19', name:'Vsauce',              title:'21M+ Subscribers',    img:av('Vsauce Michael',col())},
+    {id:'y20', name:'LazarBeam',            title:'21M+ Subscribers',    img:av('LazarBeam',col())},
+    {id:'y21', name:'Ninja',               title:'24M+ Subscribers',    img:av('Ninja Tyler',col())},
+    {id:'y22', name:'Logan Paul',           title:'23M+ Subscribers',    img:av('Logan Paul',col())},
+    {id:'y23', name:'IShowSpeed',           title:'22M+ Subscribers',    img:av('IShowSpeed',col())},
+    {id:'y24', name:'KSI',                 title:'24M+ Subscribers',    img:av('KSI',col())},
+    {id:'y25', name:'Jake Paul',            title:'20M+ Subscribers',    img:av('Jake Paul',col())},
+    {id:'y26', name:'Vanoss Gaming',        title:'25M+ Subscribers',    img:av('Vanoss Gaming',col())},
+    {id:'y27', name:'FaZe Rug',             title:'20M+ Subscribers',    img:av('FaZe Rug',col())},
+    {id:'y28', name:'CarryMinati',          title:'43M+ Subscribers',    img:av('CarryMinati',col())},
+    {id:'y29', name:'BB Ki Vines',          title:'27M+ Subscribers',    img:av('BB Ki Vines',col())},
+    {id:'y30', name:'Ashish Chanchlani',    title:'30M+ Subscribers',    img:av('Ashish Chanchlani',col())},
+    {id:'y31', name:'Technical Guruji',     title:'23M+ Subscribers',    img:av('Technical Guruji',col())},
+    {id:'y32', name:'CoryxKenshin',         title:'18M+ Subscribers',    img:av('CoryxKenshin',col())},
+    {id:'y33', name:'Aphmau',              title:'18M+ Subscribers',    img:av('Aphmau',col())},
+    {id:'y34', name:'TED',                 title:'18M+ Subscribers',    img:av('TED Talks',col())},
+    {id:'y35', name:'MKBHD',               title:'18M+ Subscribers',    img:av('Marques Brownlee',col())},
+    {id:'y36', name:'Linus Tech Tips',      title:'15M+ Subscribers',    img:av('Linus Tech',col())},
+    {id:'y37', name:'Veritasium',           title:'15M+ Subscribers',    img:av('Veritasium',col())},
+    {id:'y38', name:'Ali-A',               title:'19M+ Subscribers',    img:av('Ali A',col())},
+    {id:'y39', name:'David Dobrik',         title:'18M+ Subscribers',    img:av('David Dobrik',col())},
+    {id:'y40', name:'Preston',             title:'21M+ Subscribers',    img:av('Preston Gaming',col())},
+    {id:'y41', name:'Lilly Singh',          title:'14M+ Subscribers',    img:av('Lilly Singh',col())},
+    {id:'y42', name:'Casey Neistat',        title:'12M+ Subscribers',    img:av('Casey Neistat',col())},
+    {id:'y43', name:'Shroud',              title:'10M+ Subscribers',    img:av('Shroud Gaming',col())},
+    {id:'y44', name:'xQc',                 title:'12M+ Subscribers',    img:av('xQc Felix',col())},
+    {id:'y45', name:'KaiCenat',             title:'8M+ Subscribers',     img:av('Kai Cenat',col())},
+    {id:'y46', name:'Miniminter',           title:'10M+ Subscribers',    img:av('Miniminter Simon',col())},
+    {id:'y47', name:'Typical Gamer',        title:'15M+ Subscribers',    img:av('Typical Gamer',col())},
+    {id:'y48', name:'Sam and Colby',        title:'11M+ Subscribers',    img:av('Sam Colby',col())},
+    {id:'y49', name:'Unspeakable',          title:'16M+ Subscribers',    img:av('Unspeakable',col())},
+    {id:'y50', name:'SkyDoesMinecraft',     title:'11M+ Subscribers',    img:av('SkyDoesMinecraft',col())},
+    {id:'y51', name:'CaptainSparklez',      title:'11M+ Subscribers',    img:av('CaptainSparklez',col())},
+    {id:'y52', name:'stampylonghead',       title:'9M+ Subscribers',     img:av('Stampylonghead',col())},
+    {id:'y53', name:'Pokimane',             title:'9M+ Subscribers',     img:av('Pokimane',col())},
+    {id:'y54', name:'Wroetoshaw',           title:'8M+ Subscribers',     img:av('Wroetoshaw Harry',col())},
+    {id:'y55', name:'Vikkstar123',          title:'7M+ Subscribers',     img:av('Vikkstar123',col())},
+    {id:'y56', name:'Behzinga',             title:'4M+ Subscribers',     img:av('Behzinga Ethan',col())},
+    {id:'y57', name:'SmarterEveryDay',      title:'11M+ Subscribers',    img:av('SmarterEveryDay',col())},
+    {id:'y58', name:'Philip DeFranco',      title:'6M+ Subscribers',     img:av('Philip DeFranco',col())},
+    {id:'y59', name:'h3h3Productions',      title:'6M+ Subscribers',     img:av('h3h3 Ethan',col())},
+    {id:'y60', name:'Roman Atwood',         title:'15M+ Subscribers',    img:av('Roman Atwood',col())},
+    {id:'y61', name:'Airrack',             title:'10M+ Subscribers',    img:av('Airrack',col())},
+    {id:'y62', name:'Danny Duncan',         title:'7M+ Subscribers',     img:av('Danny Duncan',col())},
+    {id:'y63', name:'Nelk Boys',            title:'7M+ Subscribers',     img:av('Nelk Boys',col())},
+    {id:'y64', name:'Ranboo',              title:'5M+ Subscribers',     img:av('Ranboo',col())},
+    {id:'y65', name:'Ph1LzA',              title:'5M+ Subscribers',     img:av('Ph1LzA',col())},
+    {id:'y66', name:'SypherPK',             title:'6M+ Subscribers',     img:av('SypherPK Ali',col())},
+    {id:'y67', name:'Disguised Toast',      title:'3M+ Subscribers',     img:av('Disguised Toast',col())},
+    {id:'y68', name:'Ludwig',              title:'4M+ Subscribers',     img:av('Ludwig Gaming',col())},
+    {id:'y69', name:'Jynxzi',              title:'4M+ Subscribers',     img:av('Jynxzi',col())},
+    {id:'y70', name:'valkyrae',             title:'4M+ Subscribers',     img:av('Valkyrae Rachel',col())},
+    {id:'y71', name:'Graham Stephan',       title:'4M+ Subscribers',     img:av('Graham Stephan',col())},
+    {id:'y72', name:'3Blue1Brown',          title:'5M+ Subscribers',     img:av('3Blue1Brown',col())},
+    {id:'y73', name:'NileRed',             title:'4M+ Subscribers',     img:av('NileRed',col())},
+    {id:'y74', name:'Tanner Fox',           title:'10M+ Subscribers',    img:av('Tanner Fox',col())},
+    {id:'y75', name:'AdinRoss',             title:'3M+ Subscribers',     img:av('AdinRoss',col())},
+    {id:'y76', name:'Berleezy',             title:'4M+ Subscribers',     img:av('Berleezy',col())},
+    {id:'y77', name:'Morgz',               title:'14M+ Subscribers',    img:av('Morgz',col())},
+    {id:'y78', name:'Kwebbelkop',           title:'14M+ Subscribers',    img:av('Kwebbelkop',col())},
+    {id:'y79', name:'Cody Ko',              title:'3M+ Subscribers',     img:av('Cody Ko',col())},
+    {id:'y80', name:'Danny Gonzalez',       title:'3M+ Subscribers',     img:av('Danny Gonzalez',col())},
+    {id:'y81', name:'Drew Gooden',          title:'3M+ Subscribers',     img:av('Drew Gooden',col())},
+    {id:'y82', name:'Flying Beast',         title:'8M+ Subscribers',     img:av('Flying Beast',col())},
+    {id:'y83', name:'Mumbiker Nikhil',      title:'4M+ Subscribers',     img:av('Mumbiker Nikhil',col())},
+    {id:'y84', name:'Bhuvan Bam',           title:'11M+ Subscribers',    img:av('Bhuvan Bam',col())},
+    {id:'y85', name:'Triggered Insaan',     title:'12M+ Subscribers',    img:av('Triggered Insaan',col())},
+    {id:'y86', name:'Dr Disrespect',        title:'4M+ Subscribers',     img:av('Dr Disrespect',col())},
+    {id:'y87', name:'TimTheTatman',         title:'5M+ Subscribers',     img:av('TimTheTatman',col())},
+    {id:'y88', name:'HasanAbi',             title:'2M+ Subscribers',     img:av('HasanAbi Hasan',col())},
+    {id:'y89', name:'Technoblade',          title:'15M+ Subscribers',    img:av('Technoblade',col())},
+    {id:'y90', name:'Brianna',             title:'7M+ Subscribers',     img:av('Brianna Gaming',col())},
+    {id:'y91', name:'Infinite Lists',       title:'7M+ Subscribers',     img:av('Infinite Lists',col())},
+    {id:'y92', name:'Jake Webber',          title:'3M+ Subscribers',     img:av('Jake Webber',col())},
+    {id:'y93', name:'FaZe Apex',            title:'5M+ Subscribers',     img:av('FaZe Apex',col())},
+    {id:'y94', name:'PontiacMadeDDG',       title:'3M+ Subscribers',     img:av('PontiacMadeDDG',col())},
+    {id:'y95', name:'Night Owl Cinema',     title:'6M+ Subscribers',     img:av('Night Owl Cinema',col())},
+    {id:'y96', name:'Kenny Sebastian',      title:'2M+ Subscribers',     img:av('Kenny Sebastian',col())},
+    {id:'y97', name:'Tanmay Bhat',          title:'6M+ Subscribers',     img:av('Tanmay Bhat',col())},
+    {id:'y98', name:'Scott the Woz',        title:'2M+ Subscribers',     img:av('Scott Woz',col())},
+    {id:'y99', name:'Mizkif',              title:'2M+ Subscribers',     img:av('Mizkif',col())},
+    {id:'y100',name:'QTCinderella',         title:'1M+ Subscribers',     img:av('QTCinderella',col())},
+  ],
+  influencer:[
+    {id:'i1',  name:'Cristiano Ronaldo',    title:'Football · 900M+ Followers',   img:av('Cristiano Ronaldo',col())},
+    {id:'i2',  name:'Lionel Messi',         title:'Football · 500M+ Followers',   img:av('Lionel Messi',col())},
+    {id:'i3',  name:'Neymar Jr.',           title:'Football · 230M+ Followers',   img:av('Neymar Junior',col())},
+    {id:'i4',  name:'Virat Kohli',          title:'Cricket · 270M+',              img:av('Virat Kohli',col())},
+    {id:'i5',  name:'LeBron James',         title:'NBA · 160M+ Followers',        img:av('LeBron James',col())},
+    {id:'i6',  name:'Dwayne Johnson',       title:'Actor & WWE · 900M+',          img:av('Dwayne Johnson',col())},
+    {id:'i7',  name:'Serena Williams',      title:'Tennis · 17M+',               img:av('Serena Williams',col())},
+    {id:'i8',  name:'Roger Federer',        title:'Tennis · 14M+',               img:av('Roger Federer',col())},
+    {id:'i9',  name:'Naomi Osaka',          title:'Tennis · 3M+',                img:av('Naomi Osaka',col())},
+    {id:'i10', name:'Tiger Woods',          title:'Golf · 8M+',                  img:av('Tiger Woods',col())},
+    {id:'i11', name:'Usain Bolt',           title:'Athletics · 10M+',            img:av('Usain Bolt',col())},
+    {id:'i12', name:'Stephen Curry',        title:'NBA · 50M+',                  img:av('Stephen Curry',col())},
+    {id:'i13', name:'Kevin Durant',         title:'NBA · 35M+',                  img:av('Kevin Durant',col())},
+    {id:'i14', name:'Mohamed Salah',        title:'Football · 75M+',             img:av('Mohamed Salah',col())},
+    {id:'i15', name:'Kylian Mbappé',        title:'Football · 100M+',            img:av('Kylian Mbappe',col())},
+    {id:'i16', name:'Erling Haaland',       title:'Football · 35M+',             img:av('Erling Haaland',col())},
+    {id:'i17', name:'Robert Lewandowski',   title:'Football · 40M+',             img:av('Robert Lewandowski',col())},
+    {id:'i18', name:'Luka Modric',          title:'Football · 25M+',             img:av('Luka Modric',col())},
+    {id:'i19', name:'Kevin Hart',           title:'Comedian · 170M+',            img:av('Kevin Hart',col())},
+    {id:'i20', name:'Will Smith',           title:'Actor · 70M+',                img:av('Will Smith',col())},
+    {id:'i21', name:'Beyoncé',              title:'Singer · 320M+',              img:av('Beyonce',col())},
+    {id:'i22', name:'Taylor Swift',         title:'Singer · 280M+',              img:av('Taylor Swift',col())},
+    {id:'i23', name:'Ariana Grande',        title:'Singer · 380M+',              img:av('Ariana Grande',col())},
+    {id:'i24', name:'Justin Bieber',        title:'Singer · 290M+',              img:av('Justin Bieber',col())},
+    {id:'i25', name:'Selena Gomez',         title:'Singer · 420M+',              img:av('Selena Gomez',col())},
+    {id:'i26', name:'Katy Perry',           title:'Singer · 200M+',              img:av('Katy Perry',col())},
+    {id:'i27', name:'Rihanna',              title:'Singer & Fenty · 150M+',      img:av('Rihanna',col())},
+    {id:'i28', name:'Drake',               title:'Rapper · 130M+',              img:av('Drake Rapper',col())},
+    {id:'i29', name:'Ed Sheeran',           title:'Singer · 45M+',              img:av('Ed Sheeran',col())},
+    {id:'i30', name:'Billie Eilish',        title:'Singer · 120M+',              img:av('Billie Eilish',col())},
+    {id:'i31', name:'Dua Lipa',             title:'Singer · 90M+',               img:av('Dua Lipa',col())},
+    {id:'i32', name:'Bad Bunny',            title:'Rapper · 45M+',               img:av('Bad Bunny',col())},
+    {id:'i33', name:'J Balvin',             title:'Singer · 50M+',               img:av('J Balvin',col())},
+    {id:'i34', name:'Shakira',             title:'Singer · 80M+',               img:av('Shakira',col())},
+    {id:'i35', name:'Camila Cabello',       title:'Singer · 70M+',               img:av('Camila Cabello',col())},
+    {id:'i36', name:'Olivia Rodrigo',       title:'Singer · 35M+',               img:av('Olivia Rodrigo',col())},
+    {id:'i37', name:'Karol G',              title:'Singer · 60M+',               img:av('Karol G',col())},
+    {id:'i38', name:'The Weeknd',           title:'Singer · 60M+',               img:av('The Weeknd',col())},
+    {id:'i39', name:'Post Malone',          title:'Rapper · 25M+',               img:av('Post Malone',col())},
+    {id:'i40', name:'Snoop Dogg',           title:'Rapper · 85M+',               img:av('Snoop Dogg',col())},
+    {id:'i41', name:'Nicki Minaj',          title:'Rapper · 170M+',              img:av('Nicki Minaj',col())},
+    {id:'i42', name:'Cardi B',              title:'Rapper · 170M+',              img:av('Cardi B',col())},
+    {id:'i43', name:'Eminem',              title:'Rapper · 23M+',               img:av('Eminem',col())},
+    {id:'i44', name:'Chris Brown',          title:'Singer · 45M+',               img:av('Chris Brown',col())},
+    {id:'i45', name:'Harry Styles',         title:'Singer · 50M+',               img:av('Harry Styles',col())},
+    {id:'i46', name:'Shawn Mendes',         title:'Singer · 70M+',               img:av('Shawn Mendes',col())},
+    {id:'i47', name:'Lady Gaga',            title:'Singer · 50M+',               img:av('Lady Gaga',col())},
+    {id:'i48', name:'Miley Cyrus',          title:'Singer · 230M+',              img:av('Miley Cyrus',col())},
+    {id:'i49', name:'Adele',               title:'Singer · 50M+',               img:av('Adele Singer',col())},
+    {id:'i50', name:'BTS',                 title:'K-Pop · 100M+',               img:av('BTS Kpop',col())},
+    {id:'i51', name:'Kim Kardashian',       title:'TV & SKIMS · 360M+',          img:av('Kim Kardashian',col())},
+    {id:'i52', name:'Kylie Jenner',         title:'Cosmetics · 400M+',           img:av('Kylie Jenner',col())},
+    {id:'i53', name:'Kendall Jenner',       title:'Model · 300M+',              img:av('Kendall Jenner',col())},
+    {id:'i54', name:'Zendaya',             title:'Actress · 180M+',             img:av('Zendaya',col())},
+    {id:'i55', name:'Jennifer Lopez',       title:'Singer & Actress · 250M+',    img:av('Jennifer Lopez',col())},
+    {id:'i56', name:'Tom Holland',          title:'Actor, Spider-Man · 68M+',    img:av('Tom Holland',col())},
+    {id:'i57', name:'Gal Gadot',            title:'Actress, Wonder Woman · 80M+', img:av('Gal Gadot',col())},
+    {id:'i58', name:'Chris Hemsworth',      title:'Actor, Thor · 60M+',          img:av('Chris Hemsworth',col())},
+    {id:'i59', name:'Chris Evans',          title:'Actor, Cap. America · 80M+',  img:av('Chris Evans',col())},
+    {id:'i60', name:'Margot Robbie',        title:'Actress, Barbie · 20M+',      img:av('Margot Robbie',col())},
+    {id:'i61', name:'Priyanka Chopra',      title:'Actress · 90M+',              img:av('Priyanka Chopra',col())},
+    {id:'i62', name:'Deepika Padukone',     title:'Bollywood Queen · 80M+',      img:av('Deepika Padukone',col())},
+    {id:'i63', name:'Zac Efron',            title:'Actor · 60M+',                img:av('Zac Efron',col())},
+    {id:'i64', name:'Robert Downey Jr.',    title:'Actor, Iron Man · 60M+',      img:av('Robert Downey',col())},
+    {id:'i65', name:'Shah Rukh Khan',       title:'Bollywood King · 43M+',       img:av('Shah Rukh Khan',col())},
+    {id:'i66', name:'Salman Khan',          title:'Bollywood Star · 55M+',       img:av('Salman Khan',col())},
+    {id:'i67', name:'Akshay Kumar',         title:'Bollywood Hero · 70M+',       img:av('Akshay Kumar',col())},
+    {id:'i68', name:'Hrithik Roshan',       title:'Bollywood · 56M+',            img:av('Hrithik Roshan',col())},
+    {id:'i69', name:"Charli D'Amelio",      title:'TikTok · 155M+',              img:av('Charli DAmelio',col())},
+    {id:'i70', name:'Addison Rae',          title:'TikTok · 88M+',               img:av('Addison Rae',col())},
+    {id:'i71', name:'Khaby Lame',           title:'TikTok · 162M+',              img:av('Khaby Lame',col())},
+    {id:'i72', name:'Bella Poarch',         title:'TikTok · 92M+',               img:av('Bella Poarch',col())},
+    {id:'i73', name:"Dixie D'Amelio",       title:'TikTok · 56M+',               img:av('Dixie DAmelio',col())},
+    {id:'i74', name:'Noah Beck',            title:'TikTok · 34M+',               img:av('Noah Beck',col())},
+    {id:'i75', name:'Bryce Hall',           title:'TikTok · 24M+',               img:av('Bryce Hall',col())},
+    {id:'i76', name:'Avani Gregg',          title:'TikTok · 38M+',               img:av('Avani Gregg',col())},
+    {id:'i77', name:'James Charles',        title:'Beauty Creator · 26M+',       img:av('James Charles',col())},
+    {id:'i78', name:'NikkieTutorials',      title:'Beauty Creator · 14M+',       img:av('Nikkie Tutorials',col())},
+    {id:'i79', name:'Jeffree Star',         title:'Beauty Mogul · 15M+',         img:av('Jeffree Star',col())},
+    {id:'i80', name:'Bretman Rock',         title:'Creator · 18M+',              img:av('Bretman Rock',col())},
+    {id:'i81', name:'Huda Kattan',          title:'Huda Beauty · 52M+',          img:av('Huda Kattan',col())},
+    {id:'i82', name:'Gigi Hadid',           title:'Model · 80M+',                img:av('Gigi Hadid',col())},
+    {id:'i83', name:'Bella Hadid',          title:'Model · 60M+',                img:av('Bella Hadid',col())},
+    {id:'i84', name:'Hailey Bieber',        title:'Model · 50M+',                img:av('Hailey Bieber',col())},
+    {id:'i85', name:'Naomi Campbell',       title:'Model Legend · 11M+',         img:av('Naomi Campbell',col())},
+    {id:'i86', name:'Adriana Lima',         title:'Model · 14M+',                img:av('Adriana Lima',col())},
+    {id:'i87', name:'Karlie Kloss',         title:'Model · 8M+',                 img:av('Karlie Kloss',col())},
+    {id:'i88', name:'Ashley Graham',        title:'Model · 9M+',                 img:av('Ashley Graham',col())},
+    {id:'i89', name:'Gordon Ramsay',        title:'Chef & TV Host · 22M+',       img:av('Gordon Ramsay',col())},
+    {id:'i90', name:'Gary Vaynerchuk',      title:'Entrepreneur · 10M+',         img:av('Gary Vee',col())},
+    {id:'i91', name:'Tony Robbins',         title:'Life Coach · 5M+',            img:av('Tony Robbins',col())},
+    {id:'i92', name:'Ellen DeGeneres',      title:'TV Host · 18M+',              img:av('Ellen DeGeneres',col())},
+    {id:'i93', name:'Oprah Winfrey',        title:'Media Queen · 22M+',          img:av('Oprah Social',col())},
+    {id:'i94', name:'Michelle Obama',       title:'Former First Lady · 65M+',    img:av('Michelle Obama',col())},
+    {id:'i95', name:'Barack Obama',         title:'Former President · 130M+',    img:av('Barack Obama',col())},
+    {id:'i96', name:'Malala Yousafzai',     title:'Nobel Winner · 5M+',          img:av('Malala Yousafzai',col())},
+    {id:'i97', name:'Greta Thunberg',       title:'Climate Activist · 5M+',      img:av('Greta Thunberg',col())},
+    {id:'i98', name:'Pope Francis',         title:'Pope, Vatican · 9M+',         img:av('Pope Francis',col())},
+    {id:'i99', name:'Narendra Modi',        title:'Indian PM · 100M+',           img:av('Narendra Modi',col())},
+    {id:'i100',name:'Elon Musk',            title:'X Owner · 200M+',             img:av('Elon Social',col())},
+  ],
+  sports:[
+    {id:'s1',  name:'Cristiano Ronaldo',    sport:'Football',    title:'🇵🇹 Portugal · Real Madrid, Man Utd',  img:av('Cristiano Ronaldo',col())},
+    {id:'s2',  name:'Lionel Messi',         sport:'Football',    title:'🇦🇷 Argentina · PSG, Barcelona',       img:av('Lionel Messi',col())},
+    {id:'s3',  name:'LeBron James',         sport:'Basketball',  title:'🇺🇸 USA · LA Lakers · 4× NBA Champ',  img:av('LeBron James',col())},
+    {id:'s4',  name:'Michael Jordan',       sport:'Basketball',  title:'🇺🇸 USA · Chicago Bulls · GOAT',      img:av('Michael Jordan',col())},
+    {id:'s5',  name:'Serena Williams',      sport:'Tennis',      title:'🇺🇸 USA · 23 Grand Slams',            img:av('Serena Williams',col())},
+    {id:'s6',  name:'Roger Federer',        sport:'Tennis',      title:'🇨🇭 Switzerland · 20 Grand Slams',    img:av('Roger Federer',col())},
+    {id:'s7',  name:'Rafael Nadal',         sport:'Tennis',      title:'🇪🇸 Spain · 22 Grand Slams',          img:av('Rafael Nadal',col())},
+    {id:'s8',  name:'Novak Djokovic',       sport:'Tennis',      title:'🇷🇸 Serbia · 24 Grand Slams',         img:av('Novak Djokovic',col())},
+    {id:'s9',  name:'Tiger Woods',          sport:'Golf',        title:'🇺🇸 USA · 15 Major Championships',    img:av('Tiger Woods',col())},
+    {id:'s10', name:'Usain Bolt',           sport:'Athletics',   title:'🇯🇲 Jamaica · 8× Olympic Gold',       img:av('Usain Bolt',col())},
+    {id:'s11', name:'Michael Phelps',       sport:'Swimming',    title:'🇺🇸 USA · 23 Olympic Golds · GOAT',   img:av('Michael Phelps',col())},
+    {id:'s12', name:'Stephen Curry',        sport:'Basketball',  title:'🇺🇸 USA · Golden State Warriors',     img:av('Stephen Curry',col())},
+    {id:'s13', name:'Kevin Durant',         sport:'Basketball',  title:'🇺🇸 USA · Phoenix Suns',              img:av('Kevin Durant',col())},
+    {id:'s14', name:'Neymar Jr.',           sport:'Football',    title:'🇧🇷 Brazil · PSG · World Cup Star',   img:av('Neymar Junior',col())},
+    {id:'s15', name:'Kylian Mbappé',        sport:'Football',    title:'🇫🇷 France · PSG · World Cup Winner', img:av('Kylian Mbappe',col())},
+    {id:'s16', name:'Virat Kohli',          sport:'Cricket',     title:'🇮🇳 India · 100+ International 100s', img:av('Virat Kohli',col())},
+    {id:'s17', name:'Sachin Tendulkar',     sport:'Cricket',     title:'🇮🇳 India · Cricket God',             img:av('Sachin Tendulkar',col())},
+    {id:'s18', name:'MS Dhoni',             sport:'Cricket',     title:'🇮🇳 India · World Cup Winner',        img:av('MS Dhoni',col())},
+    {id:'s19', name:'Mohamed Salah',        sport:'Football',    title:'🇪🇬 Egypt · Liverpool FC',            img:av('Mohamed Salah',col())},
+    {id:'s20', name:'Erling Haaland',       sport:'Football',    title:'🇳🇴 Norway · Manchester City',        img:av('Erling Haaland',col())},
+    {id:'s21', name:'Simone Biles',         sport:'Gymnastics',  title:'🇺🇸 USA · Most Decorated Gymnast',    img:av('Simone Biles',col())},
+    {id:'s22', name:'Muhammad Ali',         sport:'Boxing',      title:'🇺🇸 USA · The Greatest · Legend',     img:av('Muhammad Ali',col())},
+    {id:'s23', name:'Pelé',                 sport:'Football',    title:'🇧🇷 Brazil · 3× World Cup · GOAT',   img:av('Pele Football',col())},
+    {id:'s24', name:'Floyd Mayweather',     sport:'Boxing',      title:'🇺🇸 USA · 50-0 · Undefeated',        img:av('Floyd Mayweather',col())},
+    {id:'s25', name:'Conor McGregor',       sport:'MMA',         title:'🇮🇪 Ireland · UFC Champion',          img:av('Conor McGregor',col())},
+    {id:'s26', name:'Canelo Alvarez',       sport:'Boxing',      title:'🇲🇽 Mexico · 4 Weight Champion',      img:av('Canelo Alvarez',col())},
+    {id:'s27', name:'Anthony Joshua',       sport:'Boxing',      title:'🇬🇧 UK · Heavyweight Champion',       img:av('Anthony Joshua',col())},
+    {id:'s28', name:'Tyson Fury',           sport:'Boxing',      title:'🇬🇧 UK · Gypsy King · Heavyweight',   img:av('Tyson Fury',col())},
+    {id:'s29', name:'Giannis Antetokounmpo',sport:'Basketball',  title:'🇬🇷 Greece · Milwaukee Bucks',        img:av('Giannis',col())},
+    {id:'s30', name:'Luka Doncic',          sport:'Basketball',  title:'🇸🇮 Slovenia · Dallas Mavericks',     img:av('Luka Doncic',col())},
+    {id:'s31', name:'Patrick Mahomes',      sport:'Formula 1',   title:'🇺🇸 USA · Kansas City Chiefs QB',     img:av('Patrick Mahomes',col())},
+    {id:'s32', name:'Tom Brady',            sport:'Formula 1',   title:'🇺🇸 USA · 7× Super Bowl Champion',   img:av('Tom Brady',col())},
+    {id:'s33', name:'Lewis Hamilton',       sport:'Formula 1',   title:'🇬🇧 UK · 7× F1 World Champion',      img:av('Lewis Hamilton',col())},
+    {id:'s34', name:'Max Verstappen',       sport:'Formula 1',   title:'🇳🇱 Netherlands · 3× F1 Champion',   img:av('Max Verstappen',col())},
+    {id:'s35', name:'Kobe Bryant',          sport:'Basketball',  title:'🇺🇸 USA · LA Lakers · Black Mamba',   img:av('Kobe Bryant',col())},
+    {id:'s36', name:'Shaquille O\'Neal',    sport:'Basketball',  title:'🇺🇸 USA · 4× NBA Champion',          img:av('Shaquille ONeal',col())},
+    {id:'s37', name:'Ronaldinho',           sport:'Football',    title:'🇧🇷 Brazil · Ballon d\'Or 2005',      img:av('Ronaldinho',col())},
+    {id:'s38', name:'Zinedine Zidane',      sport:'Football',    title:'🇫🇷 France · Real Madrid Legend',     img:av('Zinedine Zidane',col())},
+    {id:'s39', name:'David Beckham',        sport:'Football',    title:'🇬🇧 UK · Manchester United Icon',     img:av('David Beckham',col())},
+    {id:'s40', name:'Thierry Henry',        sport:'Football',    title:'🇫🇷 France · Arsenal Legend',         img:av('Thierry Henry',col())},
+    {id:'s41', name:'Naomi Osaka',          sport:'Tennis',      title:'🇯🇵 Japan · 4 Grand Slams',           img:av('Naomi Osaka',col())},
+    {id:'s42', name:'Eliud Kipchoge',       sport:'Marathon',    title:'🇰🇪 Kenya · Sub-2hr Marathon',        img:av('Eliud Kipchoge',col())},
+    {id:'s43', name:'Manny Pacquiao',       sport:'Boxing',      title:'🇵🇭 Philippines · 8 Weight Champ',    img:av('Manny Pacquiao',col())},
+    {id:'s44', name:'Wayne Gretzky',        sport:'Athletics',   title:'🇨🇦 Canada · Hockey GOAT',            img:av('Wayne Gretzky',col())},
+    {id:'s45', name:'Robert Lewandowski',   sport:'Football',    title:'🇵🇱 Poland · Barcelona FC',           img:av('Robert Lewandowski',col())},
+    {id:'s46', name:'PV Sindhu',            sport:'Badminton',   title:'🇮🇳 India · Olympic Silver & Bronze', img:av('PV Sindhu',col())},
+    {id:'s47', name:'Neeraj Chopra',        sport:'Javelin',     title:'🇮🇳 India · Olympic Gold Javelin',    img:av('Neeraj Chopra',col())},
+    {id:'s48', name:'Dwayne Johnson',       sport:'Wrestling',   title:'🇺🇸 USA · WWE Champion & Actor',      img:av('Dwayne Johnson',col())},
+    {id:'s49', name:'Ronaldo Nazario',      sport:'Football',    title:'🇧🇷 Brazil · Il Fenomeno',            img:av('Ronaldo Nazario',col())},
+    {id:'s50', name:'Gareth Bale',          sport:'Football',    title:'🏴󠁧󠁢󠁷󠁬󠁳󠁿 Wales · Real Madrid Wing Wizard',  img:av('Gareth Bale',col())},
+  ]
+};
+
+// ── STORAGE ────────────────────────────────────────────────────
+const G_KEY='wif_gv5',C_KEY='wif_cv5',S_KEY='wif_sv5',T_KEY='wif_tv5';
+const getGVoted  =()=>localStorage.getItem(G_KEY);
+const hasVoted   =()=>!!getGVoted();
+const getCounts  =()=>JSON.parse(localStorage.getItem(C_KEY)||'{}');
+const getCount   =id=>getCounts()[id]||0;
+const isStopped  =()=>localStorage.getItem(S_KEY)==='true';
+const getTotal   =()=>parseInt(localStorage.getItem(T_KEY)||'0');
+
+function castVote(id){
+  const c=getCounts();c[id]=(c[id]||0)+1;
+  localStorage.setItem(C_KEY,JSON.stringify(c));
+  localStorage.setItem(G_KEY,id);
+  const t=getTotal()+1;localStorage.setItem(T_KEY,t);
+  return{count:c[id],total:t};
+}
+
+// ── RENDER ─────────────────────────────────────────────────────
+let currentTab='rich',searchQuery='';
+const THEME={rich:'theme-rich',youtube:'theme-youtube',influencer:'theme-influencer',sports:'theme-sports'};
+
+function renderGrid(tab,query=''){
+  const persons=DATA[tab];
+  const grid=document.getElementById(tab+'-grid');
+  const sorted=[...persons].sort((a,b)=>getCount(b.id)-getCount(a.id));
+  const rankMap={};sorted.forEach((p,i)=>rankMap[p.id]=i+1);
+  const filtered=query?sorted.filter(p=>p.name.toLowerCase().includes(query.toLowerCase())):sorted;
+
+  if(!filtered.length){
+    grid.innerHTML='<div class="no-results">No results for "'+query+'"</div>';return;
+  }
+
+  const myId=getGVoted(),stopped=isStopped(),votedG=hasVoted();
+  const theme=THEME[tab];
+  grid.innerHTML='';
+
+  filtered.forEach((person,idx)=>{
+    const rank=rankMap[person.id];
+    const count=getCount(person.id);
+    const isMe=(myId===person.id);
+
+    let rankClass='rank-n',rankLabel='#'+rank;
+    if(rank===1){rankClass='rank-1';rankLabel='🥇';}
+    else if(rank===2){rankClass='rank-2';rankLabel='🥈';}
+    else if(rank===3){rankClass='rank-3';rankLabel='🥉';}
+
+    let btnClass='vote-btn',btnText='Vote',btnDis='';
+    if(stopped){btnClass='vote-btn btn-stopped';btnText='Voting Closed';btnDis='disabled';}
+    else if(isMe){btnClass='vote-btn btn-myvote';btnText='✓ Your Vote';btnDis='disabled';}
+    else if(votedG){btnClass='vote-btn btn-locked';btnText='Locked';btnDis='disabled';}
+    else{btnClass='vote-btn unvoted';}
+
+    // sport badge html
+    let sportBadgeHtml='';
+    if(tab==='sports'&&person.sport){
+      const sc=sportColors[person.sport]||{bg:'#ffffff10',color:'#94a3b8',border:'#ffffff20'};
+      sportBadgeHtml=`<div class="sport-pill" style="background:${sc.bg};color:${sc.color};border:1px solid ${sc.border}">${person.sport}</div>`;
+    }
+
+    const rankCardClass = rank===1?' gold-card':rank===2?' silver-card':rank===3?' bronze-card':'';
+    const card=document.createElement('div');
+    card.className=`card ${theme}`+rankCardClass+(isMe?' my-card':'');
+    card.id='card-'+person.id;
+    card.style.animationDelay=(idx*0.03)+'s';
+    card.innerHTML=`
+      <div class="my-check">✓</div>
+      <div class="rank-badge ${rankClass}">${rankLabel}</div>
+      ${sportBadgeHtml}
+      <div class="avatar-wrap">
+        <div class="avatar-ring"></div>
+        <div class="avatar-inner">
+          <img src="${person.img}" alt="${person.name}"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="avatar-fallback" style="display:none">${person.name.charAt(0)}</div>
+        </div>
+      </div>
+      <div class="person-name">${person.name}</div>
+      <div class="person-title">${person.title}</div>
+      <div class="vote-num" id="count-${person.id}">${count}</div>
+      <div class="vote-label">votes</div>
+      <button class="${btnClass}" id="btn-${person.id}"
+        onclick="handleVote('${person.id}','${tab}')"
+        ${btnDis}>${btnText}</button>`;
+    grid.appendChild(card);
+  });
+}
+
+// ── VOTE ───────────────────────────────────────────────────────
+function handleVote(id,tab){
+  if(hasVoted()||isStopped())return;
+  const{count,total}=castVote(id);
+  const el=document.getElementById('count-'+id);
+  if(el)el.textContent=count;
+  document.getElementById('totalVoters').textContent=total;
+  const person=Object.values(DATA).flat().find(p=>p.id===id);
+  if(person){
+    document.getElementById('votedName').textContent=person.name;
+    document.getElementById('voted-box').style.display='block';
+    document.getElementById('votedLabel').innerHTML='Your vote: <b>'+person.name+'</b>';
+  }
+  const colors={rich:['#eab308','#f97316','#fff'],youtube:['#ef4444','#fb923c','#fff'],
+    influencer:['#a855f7','#ec4899','#fff'],sports:['#22d3ee','#4ade80','#000']};
+  const cc=colors[tab]||['#a855f7','#ec4899','#fff'];
+  confetti({particleCount:100,spread:80,origin:{y:0.65},colors:cc});
+  const card=document.getElementById('card-'+id);
+  if(card){card.classList.add('just-voted');setTimeout(()=>card.classList.remove('just-voted'),800);}
+  setTimeout(()=>{
+    renderGrid(tab,searchQuery);
+    if(currentTab==='winners') renderWinners();
+  },450);
+}
+
+// ── STOP ───────────────────────────────────────────────────────
+function handleStop(){
+  if(isStopped())return;
+  if(!confirm('Stop voting permanently? This cannot be undone.'))return;
+  localStorage.setItem(S_KEY,'true');
+  document.getElementById('stop-banner').style.display='block';
+  const btn=document.getElementById('stopBtn');
+  btn.disabled=true;btn.textContent='Voting Stopped';
+  renderGrid(currentTab,searchQuery);
+}
+
+// ── LEADERBOARD ────────────────────────────────────────────────
+function renderWinners(){
+  const list=document.getElementById('winners-list');
+  list.innerHTML='';
+
+  const myId=getGVoted();
+  const catLabel={rich:'💰 Richest',youtube:'▶ YouTube',influencer:'★ Influencer',sports:'🏅 Sports'};
+  const catClass={rich:'cat-rich',youtube:'cat-youtube',influencer:'cat-influencer',sports:'cat-sports'};
+
+  // combine all 350 with category tag
+  const all=[];
+  Object.entries(DATA).forEach(([cat,persons])=>{
+    persons.forEach(p=>all.push({...p,cat}));
+  });
+
+  // sort by votes desc, then alphabetically as tiebreak
+  all.sort((a,b)=>{
+    const diff=getCount(b.id)-getCount(a.id);
+    return diff!==0?diff:a.name.localeCompare(b.name);
+  });
+
+  all.forEach((person,idx)=>{
+    const rank=idx+1;
+    const count=getCount(person.id);
+    const isMe=(myId===person.id);
+    const isZero=count===0;
+
+    let rowClass='lb-row';
+    let rankClass='',rankLabel='#'+rank,numClass='normal';
+    if(rank===1){rowClass+=' lb-gold';rankClass='gold';rankLabel='🥇';numClass='gold';}
+    else if(rank===2){rowClass+=' lb-silver';rankClass='silver';rankLabel='🥈';numClass='silver';}
+    else if(rank===3){rowClass+=' lb-bronze';rankClass='bronze';rankLabel='🥉';numClass='bronze';}
+    if(isZero)rowClass+=' zero-row';
+
+    const row=document.createElement('div');
+    row.className=rowClass;
+    row.style.animationDelay=(idx*0.008)+'s';
+    row.innerHTML=`
+      <div class="lb-rank ${rankClass}">${rankLabel}</div>
+      <div class="lb-avatar">
+        <img src="${person.img}" alt="${person.name}"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="lb-avatar-fb" style="display:none;background:#1e293b">${person.name.charAt(0)}</div>
+      </div>
+      <div class="lb-info">
+        <div class="lb-name">${person.name}</div>
+        <div class="lb-meta">${person.title||''}</div>
+      </div>
+      <span class="lb-cat ${catClass[person.cat]}">${catLabel[person.cat]}</span>
+      ${isMe?'<span class="lb-you">✓ Your Vote</span>':''}
+      <div class="lb-votes">
+        <div class="lb-num ${numClass}">${count}</div>
+        <div class="lb-vlbl">votes</div>
+      </div>`;
+    list.appendChild(row);
+  });
+}
+
+// ── TAB ────────────────────────────────────────────────────────
+function switchTab(tab,btn){
+  currentTab=tab;
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(tab).classList.add('active');
+  btn.classList.add('active');
+  document.getElementById('searchBox').value='';
+  searchQuery='';
+  document.getElementById('searchBox').style.display=tab==='winners'?'none':'block';
+  if(tab==='winners') renderWinners();
+  else renderGrid(tab);
+}
+
+// ── SEARCH ─────────────────────────────────────────────────────
+function handleSearch(){
+  searchQuery=document.getElementById('searchBox').value;
+  renderGrid(currentTab,searchQuery);
+}
+
+// ── INIT ───────────────────────────────────────────────────────
+(function(){
+  if(isStopped()){
+    document.getElementById('stop-banner').style.display='block';
+    const btn=document.getElementById('stopBtn');
+    btn.disabled=true;btn.textContent='Voting Stopped';
+  }
+  document.getElementById('totalVoters').textContent=getTotal();
+  const myId=getGVoted();
+  if(myId){
+    const p=Object.values(DATA).flat().find(x=>x.id===myId);
+    if(p){
+      document.getElementById('votedName').textContent=p.name;
+      document.getElementById('voted-box').style.display='block';
+      document.getElementById('votedLabel').innerHTML='Your vote: <b>'+p.name+'</b>';
+    }
+  }
+  renderGrid('rich');
+})();
+</script>
+</body>
+</html>
